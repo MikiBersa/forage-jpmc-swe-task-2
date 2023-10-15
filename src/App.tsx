@@ -68,7 +68,7 @@ class App extends Component<{}, IState> {
           });*/
           this.setState({
               data: serverResponds,
-              showGraph: true
+              showGraph: true,
           });
         });
 
@@ -77,8 +77,7 @@ class App extends Component<{}, IState> {
           // i will stop the calling to server if i have called for 1000 times
           clearInterval(inteval);
         }
-      }
-     );
+      } ,100);
   }
   /**
    * Render the App react component

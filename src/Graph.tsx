@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
 import { Table } from '@finos/perspective';
+import React, { Component } from 'react';
 import { ServerRespond } from './DataStreamer';
 import './Graph.css';
 
@@ -14,7 +14,12 @@ interface IProps {
  * Perspective library adds load to HTMLElement prototype.
  * This interface acts as a wrapper for Typescript compiler.
  */
-interface PerspectiveViewerElement {
+/*
+This custom interface adds a method called load to elements that implement it.
+The load method takes one argument, a table of type Table, and returns void.
+Here's a breakdown of the code:
+*/
+interface PerspectiveViewerElement extends HTMLElement {
   load: (table: Table) => void,
 }
 
@@ -32,7 +37,9 @@ class Graph extends Component<IProps, {}> {
 
   componentDidMount() {
     // Get element to attach the table from the DOM.
-    const elem: PerspectiveViewerElement = document.getElementsByTagName('perspective-viewer')[0] as unknown as PerspectiveViewerElement;
+    // I can do the assigne because now PerspectiveViewerElement extends HTMLElements
+    // so in this case elem is a HTML element with an method particular as load
+    const elem = document.getElementsByTagName('perspective-viewer')[0] as unknown as PerspectiveViewerElement;
 
     const schema = {
       stock: 'string',
@@ -45,10 +52,18 @@ class Graph extends Component<IProps, {}> {
       this.table = window.perspective.worker().table(schema);
     }
     if (this.table) {
-      // Load the `table` in the `<perspective-viewer>` DOM reference.
-
       // Add more Perspective configurations here.
       elem.load(this.table);
+
+      // Load the `table` in the `<perspective-viewer>` DOM reference.
+      elem.load(this.table);
+      elem.setAttribute("view", "y_line");
+      elem.setAttribute("column-pivots", '["stock"]');
+      elem.setAttribute("row_pivots", '["timestamp"]');
+      elem.setAttribute("columns", '["top_ask_price"]');
+      elem.setAttribute("aggregates",
+          '{"stock":"distinct_count", "top_ask_price":"avg", "top_bid_price":"avg", "timestamp":"distinct_count"}'
+      );
     }
   }
 
